@@ -4,7 +4,7 @@ public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 5f;
     public float jumpForce = 7f;
-    public int requiredItemsForAttack = 3; // 必要なアイテム数
+    public int requiredItemsForAttack = 3;
 
     private Rigidbody2D rb;
     private Animator animator;
@@ -23,33 +23,29 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // --- 横移動 ---
         float move = Input.GetAxisRaw("Horizontal");
         rb.velocity = new Vector2(move * moveSpeed, rb.velocity.y);
 
         if (move > 0) spriteRenderer.flipX = false;
         else if (move < 0) spriteRenderer.flipX = true;
 
-        // --- ジャンプ ---
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             animator.SetTrigger("Jump");
-            isGrounded = false;
         }
 
-        // --- 攻撃 ---
         if (canAttack && Input.GetKeyDown(KeyCode.F))
         {
             animator.SetTrigger("Attack");
-            canAttack = false; // 1回使ったらリセット（1回だけ攻撃できる）
+            canAttack = false;
         }
 
-        // --- アニメーション状態 ---
         if (isGrounded)
         {
             animator.SetBool("Run", Mathf.Abs(move) > 0.01f);
             animator.SetBool("Idle", Mathf.Abs(move) < 0.01f);
+            animator.SetBool("Fall", false);
         }
         else
         {
@@ -59,18 +55,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // 地面判定
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void SetGrounded(bool grounded)
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-            animator.ResetTrigger("Jump");
-            animator.SetBool("Fall", false);
-        }
+        isGrounded = grounded;
     }
 
-    // --- アイテム取得処理 ---
+
     public void AddItem()
     {
         collectedItems++;
@@ -79,8 +69,8 @@ public class PlayerController : MonoBehaviour
         if (collectedItems >= requiredItemsForAttack)
         {
             canAttack = true;
-            collectedItems = 0; // 使ったらリセットするならここで0にする
-            Debug.Log("Attack Unlocked!");
+            collectedItems = 0;
+            Debug.Log("攻撃解禁！");
         }
     }
 }
