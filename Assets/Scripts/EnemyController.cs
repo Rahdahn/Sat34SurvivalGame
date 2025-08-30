@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    [Header("ˆÚ“®ŠÖ˜A")]
     public float moveSpeed = 2f;
     public float stopDistance = 3f;
     public float jumpForce = 7f;
@@ -14,14 +13,12 @@ public class EnemyController : MonoBehaviour
     private Rigidbody2D rb;
     private bool isAttacking = false;
 
-    [Header("UŒ‚ŠÖ˜A")]
     public GameObject magicBulletPrefab;
     public Transform firePoint;
     public float minAttackDelay = 2f;
     public float maxAttackDelay = 5f;
     private float attackTimer;
 
-    [Header("¢Š«ŠÖ˜A")]
     public GameObject flyingEnemyPrefab;
     public GameObject groundEnemyPrefab;
 
@@ -81,10 +78,6 @@ public class EnemyController : MonoBehaviour
 
     private void TriggerRandomAttack()
     {
-        if (isAttacking) return;
-
-        isAttacking = true;
-
         animator.ResetTrigger("MAttack");
         animator.ResetTrigger("SAttack");
 
@@ -101,6 +94,7 @@ public class EnemyController : MonoBehaviour
 
     public void CastMagic()
     {
+        isAttacking = true;
         if (magicBulletPrefab != null && firePoint != null)
         {
             Instantiate(magicBulletPrefab, firePoint.position, firePoint.rotation);
@@ -109,6 +103,7 @@ public class EnemyController : MonoBehaviour
 
     public void SummonEnemy()
     {
+        isAttacking = true;
         bool spawnFlying = Random.value > 0.5f;
         bool spawnRight = Random.value > 0.5f;
 
@@ -132,8 +127,6 @@ public class EnemyController : MonoBehaviour
         isAttacking = false;
         animator.ResetTrigger("MAttack");
         animator.ResetTrigger("SAttack");
-
-        animator.SetBool("Fall", !isGrounded && rb.velocity.y < -0.1f);
     }
 
     public void SetGrounded(bool grounded)
